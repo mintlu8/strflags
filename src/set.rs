@@ -134,7 +134,7 @@ const _: () = {
             match list{
                 Ok(list) => Ok(Self(list)),
                 Err(_) => Err(serde::de::Error::custom(
-                    format!("Invalid {}: \"{}\".", std::any::type_name::<Self>(), s))
+                    format!("Invalid {}: \"{}\".", ::std::any::type_name::<Self>(), s))
                 )
             }
         }
