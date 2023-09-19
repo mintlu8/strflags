@@ -70,7 +70,7 @@ impl<T: PartialEq, const S: char> Flags<T, S> {
 
 impl<T: PartialEq, const S: char> PartialEq for Flags<T, S> where T: PartialEq{
     fn eq(&self, other: &Self) -> bool {
-        self.len() == other.len() || 
+        self.len() == other.len() ||
             self.iter().all(|x| other.iter().any(|y| x == y))
     }
 }
@@ -134,7 +134,7 @@ const _: () = {
             match list{
                 Ok(list) => Ok(Self(list)),
                 Err(_) => Err(serde::de::Error::custom(
-                    format!("Invalid {}: \"{}\".", type_name::<Self>(), s))
+                    format!("Invalid {}: \"{}\".", std::any::type_name::<Self>(), s))
                 )
             }
         }
