@@ -221,7 +221,7 @@ macro_rules! str_enum {
 #[macro_export]
 macro_rules! str_flags {
     ($name: ident : [$($fields: ident),* $(,)?]) => {
-        str_enum!($name: [$($fields),*]);
+        ::strflags::str_enum!($name: [$($fields),*]);
 
         const _: () = {
             impl ::strflags::FlagsMarker for $name {}
