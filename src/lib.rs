@@ -47,7 +47,7 @@
 //! You can create a `Flags<Color>` like this
 //!```
 //! # use ::strflags::*;
-//! # str_enum! { Color: [ Red,  Green, DarkBlue ] };
+//! # str_flags! { Color: [ Red,  Green, DarkBlue ] };
 //! let flags = Color::Red | Color::Green | Color::new("Yellow");
 //! assert!(flags.contains(Color::Red));
 //! assert!(flags.contains(Color::new("Green")));
@@ -85,11 +85,11 @@
 //!
 mod set;
 mod operators;
+mod query;
 use std::sync::atomic::{AtomicUsize, Ordering::Relaxed};
 
-pub use set::Flags;
-#[doc(hidden)]
-pub use set::SetOrItem;
+pub use set::{Flags, FlagsMarker};
+pub use query::Query;
 #[doc(hidden)]
 pub use ecow::EcoString;
 #[doc(hidden)]
@@ -131,6 +131,8 @@ pub fn str_eq(a: &str, b: &str) -> bool {
 }
 
 /// Construct a string enum.
+/// 
+/// To use [`Flags`], call [`str_flags`] instead.
 ///
 /// This struct stores all its data in `flatlowercase` to avoid some typos.
 ///
@@ -182,13 +184,6 @@ macro_rules! str_enum {
                 }
             }
 
-            impl ::strflags::SetOrItem<Self> for $name {
-                type Iter<'t> = ::std::iter::Once<&'t Self>;
-                fn items<'t>(&'t self) -> Self::Iter<'t>{
-                    ::std::iter::once(self)
-                }
-            }
-
             impl std::borrow::Borrow<str> for $name {
                 fn borrow(&self) -> &str {
                     use std::borrow::Borrow;
@@ -202,11 +197,34 @@ macro_rules! str_enum {
                 }
             }
 
+            impl PartialEq<str> for $name {
+                fn eq(&self, other: &str) -> bool {
+                    self.0 == other
+                }
+            }
+
             impl<T: AsRef<str>> ::std::cmp::PartialEq<T> for $name {
                 fn eq(&self, other: &T) -> bool {
                     ::strflags::str_eq(self.0.as_ref(), other.as_ref())
                 }
             }
+
+        };
+
+        ::strflags::impl_serde!($name);
+    };
+}
+
+/// Construct a string enum and enable [`Flags`] usage.
+///
+/// This provides all functionalites of [`str_enum`].
+#[macro_export]
+macro_rules! str_flags {
+    ($name: ident : [$($fields: ident),* $(,)?]) => {
+        str_enum!($name: [$($fields),*]);
+
+        const _: () = {
+            impl ::strflags::FlagsMarker for $name {}
 
             impl ::std::ops::BitOr for $name {
                 type Output = ::strflags::Flags<Self>;
@@ -214,10 +232,29 @@ macro_rules! str_enum {
                     ::strflags::Flags::pair(self, rhs)
                 }
             }
-        };
 
-        ::strflags::impl_serde!($name);
-    };
+            impl ::std::ops::BitOr<::strflags::Flags<Self>> for $name {
+                type Output = ::strflags::Flags<Self>;
+                fn bitor(self, rhs: ::strflags::Flags<Self>) -> Self::Output {
+                    rhs | self
+                }
+            }
+
+            impl ::std::ops::BitAnd<::strflags::Flags<Self>> for $name {
+                type Output = ::strflags::Flags<Self>;
+                fn bitand(self, rhs: ::strflags::Flags<Self>) -> Self::Output {
+                    rhs & self
+                }
+            }
+
+            impl ::std::ops::BitXor<::strflags::Flags<Self>> for $name {
+                type Output = ::strflags::Flags<Self>;
+                fn bitxor(self, rhs: ::strflags::Flags<Self>) -> Self::Output {
+                    rhs ^ self
+                }
+            }
+        };
+    }
 }
 
 #[cfg(not(feature="serde"))]

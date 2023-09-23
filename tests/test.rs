@@ -1,7 +1,7 @@
 
 use strflags::*;
 
-str_enum! {
+str_flags! {
     Animal: [
         Dog,
         Cat,

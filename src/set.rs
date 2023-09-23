@@ -1,17 +1,9 @@
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, str::FromStr, marker::PhantomData};
+use crate::{query::AsRefStrIter, Query};
 use smallvec::SmallVec;
 
-pub trait SetOrItem<T> {
-    type Iter<'t>: Iterator<Item = &'t T> where Self: 't, T: 't;
-    fn items<'t>(&'t self) -> Self::Iter<'t>;
-}
-
-impl<T: PartialEq, const S: char> SetOrItem<T> for Flags<T, S> where T: SetOrItem<T>{
-    type Iter<'t> = core::slice::Iter<'t, T> where T: 't;
-    fn items<'t>(&'t self) -> Self::Iter<'t> {
-        self.0.iter()
-    }
-}
+/// Marker for implementors of [`str_flags`](crate::str_flags).
+pub trait FlagsMarker: AsRef<str> + PartialEq<str> {}
 
 /// A set of string-enums
 #[derive(Clone)]
@@ -53,7 +45,7 @@ impl<T: PartialEq, const S: char> Flags<T, S> {
     }
 
     #[inline]
-    pub fn contains(&self, t: impl SetOrItem<T>) -> bool{
+    pub fn contains(&self, t: impl Query<T>) -> bool where T: FlagsMarker{
         for i in t.items() {
             if self.0.iter().any(|x| x == i) {
                 return true;
@@ -90,6 +82,16 @@ impl<'t, T: PartialEq, const S: char> IntoIterator for &'t Flags<T, S> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.iter()
+    }
+}
+
+
+impl<T: PartialEq, const S: char> std::fmt::Debug for Flags<T, S> where T: AsRef<str>{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut set = f.debug_set();
+        set.entries(AsRefStrIter(self.iter(), PhantomData));
+        set.finish()?;
+        Ok(())
     }
 }
 
