@@ -60,6 +60,12 @@ impl<T: PartialEq, const S: char> Flags<T, S> {
     }
 }
 
+impl<T: PartialEq, const S: char> Default for Flags<T, S> {
+    fn default() -> Self {
+        Self::EMPTY
+    }
+}
+
 impl<T: PartialEq, const S: char> PartialEq for Flags<T, S> where T: PartialEq{
     fn eq(&self, other: &Self) -> bool {
         self.len() == other.len() ||
