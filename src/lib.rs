@@ -9,7 +9,7 @@
 //! ```
 //! # use ::strflags::*;
 //! str_enum! {
-//!     Color: [
+//!     pub Color: [
 //!         Red,
 //!         Green,
 //!         DarkBlue,
@@ -145,15 +145,18 @@ pub fn str_eq(a: &str, b: &str) -> bool {
 /// This behavior will be changed in the future.
 #[macro_export]
 macro_rules! str_enum {
-    ($name: ident : [$($fields: ident),* $(,)?]) => {
+    ($(#[$main_attr:meta])* $vis:vis $name: ident: [$($(#[$attr: meta])* $fields: ident),* $(,)?]) => {
+        
         #[derive(Debug, Clone, Eq, Hash)]
-        pub struct $name(::strflags::EcoString);
+        $(#[$main_attr])*
+        $vis struct $name(::strflags::EcoString);
 
         const _: () = {
 
             #[allow(non_upper_case_globals)]
             impl $name {
-                $(pub const $fields: Self = Self(::strflags::EcoString::inline(
+                $($(#[$attr])*
+                pub const $fields: Self = Self(::strflags::EcoString::inline(
                     ::strflags::lower_strify!($fields)
                 ));)*
 
@@ -220,8 +223,8 @@ macro_rules! str_enum {
 /// This provides all functionalites of [`str_enum`].
 #[macro_export]
 macro_rules! str_flags {
-    ($name: ident : [$($fields: ident),* $(,)?]) => {
-        ::strflags::str_enum!($name: [$($fields),*]);
+    ($(#[$main_attr: meta])* $vis:vis $name: ident: [$($(#[$attr: meta])* $fields: ident),* $(,)?]) => {
+        ::strflags::str_enum!($(#[$main_attr])* $vis $name: [$($(#[$attr])* $fields),*]);
 
         const _: () = {
             impl ::strflags::FlagsMarker for $name {}

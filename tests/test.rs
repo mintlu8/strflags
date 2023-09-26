@@ -3,14 +3,19 @@ use strflags::*;
 
 str_flags! {
     Animal: [
+        #[doc="dog"]
         Dog,
+        /// cat
         Cat,
+        /// Rabbit
         Rabbit,
         Giraffe,
         Whale,
         Dolphin,
     ]
 }
+
+
 
 str_enum! {
     VeryLarge : [
@@ -136,4 +141,21 @@ fn sub() {
     let diff = animals1 - animals2;
     assert!(diff.len() == 1);
     assert!(diff.contains(Animal::Giraffe));
+}
+
+
+str_flags! {
+    #[derive(Default, PartialOrd, Ord)]
+    pub Language: [
+        /// Crab
+        Rust,
+        /// C++
+        CPlusPlus
+    ]
+}
+
+#[test]
+fn test_v3() {
+    assert!(Language::default() == "");
+    assert!(Language::Rust > Language::CPlusPlus);
 }

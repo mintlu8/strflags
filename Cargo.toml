@@ -1,6 +1,6 @@
 [package]
 name = "strflags"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 rust = "1.65.0"
@@ -18,7 +18,7 @@ debug = ["levenshtein", "log"]
 [dependencies]
 convert_case = "0.6"
 ecow = { version = "0.1", features = ["serde"] }
-identconv = "0.1"
+identconv = "0.2"
 smallvec = { version = "1.11", features = ["serde", "const_new"] }
 
 levenshtein = { version = "1", optional = true }
