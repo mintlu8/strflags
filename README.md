@@ -8,7 +8,7 @@ while being more ergonomic and more typo-resiliant than a set of strings like `H
 ## Example
 
 ```rust
-pub str_flags! {
+str_flags! {
     #[derive(PartialOrd)]
     pub Color: [
         Red,
@@ -28,8 +28,6 @@ And consts:
 * `pub const Green: Color = "green";`
 * `pub const DarkBlue: Color = "darkblue";`
 
-**Note:** The implementation is not `&'static str` and subject to change.
-
 ### And auto implements
 
 * `Debug`, `Clone`, `Eq`, `Hash`
@@ -43,13 +41,13 @@ And consts:
 * `Serialize`, with the `serde` feature enabled
 * `Deserialize`, with the `serde` feature enabled
 
-### `str_enum!()`
-
-use the `str_enum!()` macro to opt out of flags related features.
-
 ### Flags
 
 You can create a `Flags<Color>` like this.
+
+### `str_enum!()`
+
+use the `str_enum!()` macro to opt out of flags related features.
 
 ```rust
 let flags = Color::Red | Color::Green | Color::new("Yellow");
@@ -63,9 +61,13 @@ to avoid case mismatches and some typos.
 ## Serialization and Deserialization
 
 We use a string to serialize our "string enums".
+
 e.g. `"red"`
+
 We use a csv like string to serialize our `Flags`
+
 e.g. `"dog|cat|giraffe"`
+
 This ensures converting from enum to `Flags` does not break serialization formats.
 
 ## The `debug` feature

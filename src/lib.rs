@@ -1,14 +1,13 @@
 //! A string-enum and string-flags with fixed variants that can also accept arbitrary data.
 //!
 //! This is more extensible than traditional enums, bitflags or enumset,
-//!
 //! while being more ergonomic and more typo-resiliant than a set of strings like `HashSet<String>`.
 //!
 //! # Example
 //!
 //! ```
 //! # use ::strflags::*;
-//! str_enum! {
+//! str_flags! {
 //!     pub Color: [
 //!         Red,
 //!         Green,
