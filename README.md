@@ -43,6 +43,10 @@ And consts:
 * `Serialize`, with the `serde` feature enabled
 * `Deserialize`, with the `serde` feature enabled
 
+### `str_enum!()`
+
+use the `str_enum!()` macro to opt out of flags related features.
+
 ### Flags
 
 You can create a `Flags<Color>` like this.
